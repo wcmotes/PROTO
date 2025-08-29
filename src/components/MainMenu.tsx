@@ -8,12 +8,14 @@ interface MainMenuProps {
   onStartGame: () => void;
   onShowSettings?: () => void;
   onShowCredits?: () => void;
+  onEnterHome?: () => void;
 }
 
 const MainMenu: React.FC<MainMenuProps> = ({ 
   onStartGame, 
   onShowSettings, 
-  onShowCredits 
+  onShowCredits, 
+  onEnterHome,
 }) => {
   const { 
     currentLevel, 
@@ -335,6 +337,21 @@ const MainMenu: React.FC<MainMenuProps> = ({
              atmosphere === 'dark_transition' ? 'Start New Journey' : 
              'New Game'}
           </motion.button>
+
+          {/* Enter Home (PKM) Button */}
+          {onEnterHome && (
+            <motion.button
+              className="w-full py-3 px-6 rounded-xl font-semibold text-lg transition-all duration-200 border-2"
+              style={getButtonStyle('home', hoveredButton === 'home')}
+              onMouseEnter={() => { setHoveredButton('home'); playHover(); }}
+              onMouseLeave={() => setHoveredButton(null)}
+              onClick={() => { playClick(); onEnterHome?.(); }}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              {atmosphere === 'horror' ? 'RETREAT TO SANCTUARY' : 'Enter Home (PKM)'}
+            </motion.button>
+          )}
 
           {/* Settings Button */}
           {onShowSettings && (

@@ -1,15 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from './game/engine/gameStore';
+import { usePKMStore } from './game/engine/pkmStore';
 import MainMenu from './components/MainMenu';
 import GameBoard from './game/engine/GameBoard';
 import { AudioManager } from './game/audio';
 import { AtmosphereType } from './types/game';
+import HomeScene from './game/home/HomeScene';
 
-type AppState = 'menu' | 'game' | 'settings' | 'credits';
+type AppState = 'menu' | 'game' | 'settings' | 'credits' | 'home';
 
 export default function App() {
-  const [appState, setAppState] = useState<AppState>('menu');
-  const { atmosphere, playerProgress } = useGameStore();
+   const [appState, setAppState] = useState<AppState>('menu');
+   const { atmosphere, playerProgress } = useGameStore();
+   const { initializePKM, isNotesOverlayOpen, setNotesOverlayOpen } = usePKMStore();
+
+   // Initialize PKM system on app startup
+   useEffect(() => {
+     const initPKM = async () => {
+       try {
+         await initializePKM();
+         console.log('Mystical House PKM initialized successfully');
+       } catch (error) {
+         console.error('Failed to initialize PKM:', error);
+       }
+     };
+     initPKM();
+   }, [initializePKM]);
 
   // Update document title based on atmosphere
   useEffect(() => {
@@ -20,7 +36,7 @@ export default function App() {
       dark_transition: 'Echoes in the Dark',
       horror: 'DESCENT INTO MADNESS'
     };
-    
+
     document.title = titles[atmosphere];
   }, [atmosphere]);
 
@@ -37,6 +53,10 @@ export default function App() {
     setAppState('game');
   };
 
+  const handleEnterHome = () => {
+    setAppState('home');
+  };
+
   const handleMenuReturn = () => {
     setAppState('menu');
   };
@@ -51,12 +71,12 @@ export default function App() {
 
   const renderSettingsScreen = () => {
     return (
-      <div 
+      <div
         className="min-h-screen flex items-center justify-center"
         style={{
           background: atmosphere === 'horror' ? 'linear-gradient(135deg, #0F0F0F 0%, #1A1A2E 50%, #000000 100%)' :
-                     atmosphere === 'dark_transition' ? 'linear-gradient(135deg, #2D3748 0%, #1A202C 50%, #171923 100%)' :
-                     'linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 50%, #E2E8F0 100%)'
+                      atmosphere === 'dark_transition' ? 'linear-gradient(135deg, #2D3748 0%, #1A202C 50%, #171923 100%)' :
+                      'linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 50%, #E2E8F0 100%)'
         }}
       >
         <div className="text-center p-8 rounded-2xl" style={{
@@ -74,8 +94,8 @@ export default function App() {
             onClick={handleMenuReturn}
             className="px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105"
             style={{
-              backgroundColor: atmosphere === 'horror' ? '#2C1810' : 
-                             atmosphere === 'dark_transition' ? '#4A5568' : '#3182CE',
+              backgroundColor: atmosphere === 'horror' ? '#2C1810' :
+                              atmosphere === 'dark_transition' ? '#4A5568' : '#3182CE',
               color: '#E2E8F0',
               border: '2px solid #2D3748'
             }}
@@ -89,12 +109,12 @@ export default function App() {
 
   const renderCreditsScreen = () => {
     return (
-      <div 
+      <div
         className="min-h-screen flex items-center justify-center"
         style={{
           background: atmosphere === 'horror' ? 'linear-gradient(135deg, #0F0F0F 0%, #1A1A2E 50%, #000000 100%)' :
-                     atmosphere === 'dark_transition' ? 'linear-gradient(135deg, #2D3748 0%, #1A202C 50%, #171923 100%)' :
-                     'linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 50%, #E2E8F0 100%)'
+                      atmosphere === 'dark_transition' ? 'linear-gradient(135deg, #2D3748 0%, #1A202C 50%, #171923 100%)' :
+                      'linear-gradient(135deg, #F7FAFC 0%, #EDF2F7 50%, #E2E8F0 100%)'
         }}
       >
         <div className="text-center p-8 rounded-2xl max-w-2xl" style={{
@@ -108,7 +128,11 @@ export default function App() {
           <div className="space-y-4 text-lg">
             <p>
               <strong>Game Design & Development:</strong><br />
-              {atmosphere === 'horror' ? 'The Architect of Nightmares' : 'SOLO Coding AI'}
+              {atmosphere === 'horror' ? 'The Architect of Nightmares' : 'Kilo Code AI'}
+            </p>
+            <p>
+              <strong>PKM System Architecture:</strong><br />
+              {atmosphere === 'horror' ? 'The Knowledge Weaver' : 'Spaced Repetition & Linking Engine'}
             </p>
             <p>
               <strong>Atmospheric Progression:</strong><br />
@@ -120,11 +144,15 @@ export default function App() {
             </p>
             <p>
               <strong>Built with:</strong><br />
-              React, TypeScript, Framer Motion, Zustand
+              React, TypeScript, Framer Motion, Zustand, IndexedDB
+            </p>
+            <p>
+              <strong>Mystical Features:</strong><br />
+              Knowledge Quests, Spaced Repetition, Bidirectional Linking, Retro Gaming Aesthetics
             </p>
             {atmosphere === 'horror' && (
               <p className="text-red-400 italic mt-6">
-                "In the end, we are all just puzzles waiting to be solved..."
+                "In the house of knowledge, every shadow holds a secret..."
               </p>
             )}
           </div>
@@ -132,8 +160,8 @@ export default function App() {
             onClick={handleMenuReturn}
             className="mt-8 px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:scale-105"
             style={{
-              backgroundColor: atmosphere === 'horror' ? '#2C1810' : 
-                             atmosphere === 'dark_transition' ? '#4A5568' : '#3182CE',
+              backgroundColor: atmosphere === 'horror' ? '#2C1810' :
+                              atmosphere === 'dark_transition' ? '#4A5568' : '#3182CE',
               color: '#E2E8F0',
               border: '2px solid #2D3748'
             }}
@@ -153,15 +181,26 @@ export default function App() {
             onStartGame={handleStartGame}
             onShowSettings={handleShowSettings}
             onShowCredits={handleShowCredits}
+            onEnterHome={handleEnterHome}
           />
         )}
-        
+
         {appState === 'game' && (
           <GameBoard onMenuReturn={handleMenuReturn} />
         )}
-        
+
+        {appState === 'home' && (
+          <HomeScene
+            onMenuReturn={handleMenuReturn}
+            onOpenNotes={() => {
+              // Notes overlay is now handled internally by HomeScene
+              console.log('Opening PKM interface...');
+            }}
+          />
+        )}
+
         {appState === 'settings' && renderSettingsScreen()}
-        
+
         {appState === 'credits' && renderCreditsScreen()}
       </div>
     </AudioManager>
