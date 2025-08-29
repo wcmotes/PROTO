@@ -6,11 +6,13 @@ import GameBoard from './game/engine/GameBoard';
 import { AudioManager } from './game/audio';
 import { AtmosphereType } from './types/game';
 import HomeScene from './game/home/HomeScene';
+import NotesOverlay from './game/home/NotesOverlay';
 
 type AppState = 'menu' | 'game' | 'settings' | 'credits' | 'home';
 
 export default function App() {
    const [appState, setAppState] = useState<AppState>('menu');
+   const [notesOpen, setNotesOpen] = useState(false);
    const { atmosphere, playerProgress } = useGameStore();
    const { initializePKM, isNotesOverlayOpen, setNotesOverlayOpen } = usePKMStore();
 
@@ -58,6 +60,7 @@ export default function App() {
   };
 
   const handleMenuReturn = () => {
+    setNotesOpen(false);
     setAppState('menu');
   };
 
@@ -190,13 +193,10 @@ export default function App() {
         )}
 
         {appState === 'home' && (
-          <HomeScene
-            onMenuReturn={handleMenuReturn}
-            onOpenNotes={() => {
-              // Notes overlay is now handled internally by HomeScene
-              console.log('Opening PKM interface...');
-            }}
-          />
+          <>
+            <HomeScene onMenuReturn={handleMenuReturn} onOpenNotes={() => setNotesOpen(true)} />
+            {notesOpen && <NotesOverlay onClose={() => setNotesOpen(false)} />}
+          </>
         )}
 
         {appState === 'settings' && renderSettingsScreen()}
