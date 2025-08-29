@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useGameStore } from './game/engine/gameStore';
-import { usePKMStore } from './game/engine/pkmStore';
 import MainMenu from './components/MainMenu';
 import GameBoard from './game/engine/GameBoard';
 import { AudioManager } from './game/audio';
@@ -14,7 +13,6 @@ export default function App() {
    const [appState, setAppState] = useState<AppState>('menu');
    const [notesOpen, setNotesOpen] = useState(false);
    const { atmosphere, playerProgress } = useGameStore();
-   const { initializePKM, isNotesOverlayOpen, setNotesOverlayOpen } = usePKMStore();
 
    // Initialize PKM system on app startup
    useEffect(() => {
