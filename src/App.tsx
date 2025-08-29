@@ -10,22 +10,9 @@ import NotesOverlay from './game/home/NotesOverlay';
 type AppState = 'menu' | 'game' | 'settings' | 'credits' | 'home';
 
 export default function App() {
-   const [appState, setAppState] = useState<AppState>('menu');
-   const [notesOpen, setNotesOpen] = useState(false);
-   const { atmosphere, playerProgress } = useGameStore();
-
-   // Initialize PKM system on app startup
-   useEffect(() => {
-     const initPKM = async () => {
-       try {
-         await initializePKM();
-         console.log('Mystical House PKM initialized successfully');
-       } catch (error) {
-         console.error('Failed to initialize PKM:', error);
-       }
-     };
-     initPKM();
-   }, [initializePKM]);
+  const [appState, setAppState] = useState<AppState>('menu');
+  const [notesOpen, setNotesOpen] = useState(false);
+  const { atmosphere, playerProgress } = useGameStore();
 
   // Update document title based on atmosphere
   useEffect(() => {
